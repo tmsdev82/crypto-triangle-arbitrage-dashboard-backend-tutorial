@@ -21,7 +21,7 @@ type Result<T> = std::result::Result<T, Rejection>;
 
 fn get_binance_streams_url() -> Url {
     let binance_url = format!(
-        "{}/stream?streams=ethbtc@depth5@100ms/bnbeth@depth5@100ms",
+        "{}/stream?streams=ethbtc@depth5@100ms/bnbeth@depth5@100ms/bnbbtc@depth5@100ms",
         BINANCE_WS_API
     );
 
