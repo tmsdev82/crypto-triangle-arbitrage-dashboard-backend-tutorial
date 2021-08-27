@@ -1,9 +1,9 @@
-use std::collections::HashMap;
-
 use crate::{
     models::{self, DepthStreamWrapper},
     Clients,
 };
+use std::collections::HashMap;
+use tokio::time::Duration;
 
 use tungstenite::{client::AutoStream, WebSocket};
 use warp::ws::Message;
@@ -11,6 +11,8 @@ use warp::ws::Message;
 pub async fn main_worker(clients: Clients, mut socket: WebSocket<AutoStream>) {
     let mut pairs_data: HashMap<String, DepthStreamWrapper> = HashMap::new();
     loop {
+        tokio::time::sleep(Duration::from_millis(60)).await;
+
         let connected_client_count = clients.lock().await.len();
         if connected_client_count == 0 {
             println!("No clients connected, skip sending data");
