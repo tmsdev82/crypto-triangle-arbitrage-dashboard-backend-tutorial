@@ -1,3 +1,5 @@
+use log::{debug, info};
+use log4rs;
 use std::{collections::HashMap, convert::Infallible, sync::Arc};
 use tokio::sync::{mpsc, Mutex};
 use url::Url;
@@ -30,9 +32,11 @@ fn get_binance_streams_url() -> Url {
 
 #[tokio::main]
 async fn main() {
+    log4rs::init_file("log_config.yaml", Default::default()).unwrap();
+
     let clients: Clients = Arc::new(Mutex::new(HashMap::new()));
 
-    println!("Configuring websocket route");
+    info!("Configuring websocket route");
     let ws_route = warp::path("ws")
         .and(warp::ws())
         .and(with_clients(clients.clone()))
@@ -40,21 +44,21 @@ async fn main() {
 
     let routes = ws_route.with(warp::cors().allow_any_origin());
 
-    println!("Connecting to binance stream...");
+    info!("Connecting to binance stream...");
     let binance_url = get_binance_streams_url();
     let (socket, response) = tungstenite::connect(binance_url).expect("Can't connect.");
-    println!("Connected to binance stream.");
-    println!("HTTP status code: {}", response.status());
-    println!("Response headers:");
+    info!("Connected to binance stream.");
+    debug!("HTTP status code: {}", response.status());
+    debug!("Response headers:");
     for (ref header, ref header_value) in response.headers() {
-        println!("- {}: {:?}", header, header_value);
+        debug!("- {}: {:?}", header, header_value);
     }
 
-    println!("Starting update loop");
+    info!("Starting update loop");
     tokio::task::spawn(async move {
         workers::main_worker(clients.clone(), socket).await;
     });
-    println!("Starting server");
+    info!("Starting server");
     warp::serve(routes).run(([127, 0, 0, 1], 8000)).await;
 }
 

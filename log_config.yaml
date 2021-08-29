@@ -1,0 +1,43 @@
+appenders:
+  stdout_logger:
+    kind: console
+    encoder:
+      pattern: "{h({d(%Y-%m-%d %H:%M:%S)(utc)} - {l}: {m}{n})}"
+  main_file_logger:
+    kind: rolling_file
+    path: "logs/main.log"
+    encoder:
+      pattern: "{d(%Y-%m-%d %H:%M:%S)(utc)} - {h({l})}: {m}{n}"
+    policy:
+      trigger:
+        kind: size
+        limit: 10 mb
+      roller:
+        kind: fixed_window
+        base: 1
+        count: 10
+        pattern: "logs/main{}.log"
+  profit_file_logger:
+    kind: rolling_file
+    path: "logs/profit.log"
+    encoder:
+      pattern: "{d(%Y-%m-%d %H:%M:%S.%f)(utc)} - {h({l})}: {m}{n}"
+    policy:
+      trigger:
+        kind: size
+        limit: 10 mb
+      roller:
+        kind: fixed_window
+        base: 1
+        count: 10
+        pattern: "logs/profit{}.log"
+root:
+  level: debug
+  appenders:
+    - stdout_logger
+    - main_file_logger
+loggers:
+  profit:
+    level: info
+    appenders:
+      - profit_file_logger

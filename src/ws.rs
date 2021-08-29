@@ -1,12 +1,13 @@
 use crate::{Client, Clients};
 use futures::{FutureExt, StreamExt};
+use log::{error, info};
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
 use uuid::Uuid;
 use warp::ws::{Message, WebSocket};
 
 pub async fn client_connection(ws: WebSocket, clients: Clients) {
-    println!("establishing client connection... {:?}", ws);
+    info!("establishing client connection... {:?}", ws);
 
     let (client_ws_sender, mut client_ws_rcv) = ws.split();
     let (client_sender, client_rcv) = mpsc::unbounded_channel();
@@ -15,7 +16,7 @@ pub async fn client_connection(ws: WebSocket, clients: Clients) {
 
     tokio::task::spawn(client_rcv.forward(client_ws_sender).map(|result| {
         if let Err(e) = result {
-            println!("error sending websocket msg: {}", e);
+            error!("error sending websocket msg: {}", e);
         }
     }));
 
@@ -32,7 +33,7 @@ pub async fn client_connection(ws: WebSocket, clients: Clients) {
         let msg = match result {
             Ok(msg) => msg,
             Err(e) => {
-                println!("error receiving message for id {}): {}", uuid.clone(), e);
+                error!("error receiving message for id {}): {}", uuid.clone(), e);
                 break;
             }
         };
@@ -40,11 +41,11 @@ pub async fn client_connection(ws: WebSocket, clients: Clients) {
     }
 
     clients.lock().await.remove(&uuid);
-    println!("{} disconnected", uuid);
+    info!("{} disconnected", uuid);
 }
 
 async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
-    println!("received message from {}: {:?}", client_id, msg);
+    info!("received message from {}: {:?}", client_id, msg);
 
     let message = match msg.to_str() {
         Ok(v) => v,
@@ -56,7 +57,7 @@ async fn client_msg(client_id: &str, msg: Message, clients: &Clients) {
         match locked.get(client_id) {
             Some(v) => {
                 if let Some(sender) = &v.sender {
-                    println!("sending pong");
+                    info!("sending pong");
                     let _ = sender.send(Ok(Message::text("pong")));
                 }
             }
