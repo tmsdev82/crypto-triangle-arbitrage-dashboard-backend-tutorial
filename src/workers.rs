@@ -2,6 +2,7 @@ use crate::{
     models::{self, DepthStreamWrapper},
     Clients,
 };
+use log::{debug, error, info};
 use std::collections::HashMap;
 use tokio::time::Duration;
 
@@ -15,16 +16,17 @@ pub async fn main_worker(clients: Clients, mut socket: WebSocket<AutoStream>) {
 
         let connected_client_count = clients.lock().await.len();
         if connected_client_count == 0 {
-            println!("No clients connected, skip sending data");
+            tokio::time::sleep(Duration::from_millis(1000)).await;
+            debug!("No clients connected, skip sending data");
             continue;
         }
-        println!("{} connected client(s)", connected_client_count);
+        info!("{} connected client(s)", connected_client_count);
 
         let msg = socket.read_message().expect("Error reading message");
         let msg = match msg {
             tungstenite::Message::Text(s) => s,
             _ => {
-                println!("Error getting text: {:?}", msg);
+                error!("Error getting text: {:?}", msg);
                 continue;
             }
         };
@@ -54,7 +56,7 @@ async fn process_triangle_data(
     triangle: [&str; 3],
     clients: Clients,
 ) {
-    println!(
+    info!(
         "processing triangle {:?}: {}->{}->{}",
         triangle, start_pair, mid_pair, end_pair
     );
@@ -68,7 +70,7 @@ async fn process_triangle_data(
     let (start_pair_data, mid_pair_data, end_pair_data) = match data {
         (Some(s), Some(m), Some(e)) => (s, m, e),
         _ => {
-            println!(
+            info!(
                 "{:?} One or more of the pairs were not found, skipping",
                 (start_pair, mid_pair, end_pair)
             );
@@ -101,10 +103,14 @@ async fn process_triangle_data(
             triangle[2],
         );
 
-        profits.push(triangle_profit - 1.0);
+        let norm_profit = triangle_profit - 1.0;
+        profits.push(norm_profit);
+        if norm_profit > 0.0 {
+            info!(target: "profit", "{:?} positive profit: {:.5}% ({} {})", triangle, (norm_profit*100.0), norm_profit, triangle[0]);
+        }
     }
 
-    println!("{:?} potential profits: {:?}", triangle, profits);
+    info!("{:?} potential profits: {:?}", triangle, profits);
     let triangle_data = models::TriangleArbitrageData {
         start_pair_data: start_pair_data.clone(),
         mid_pair_data: mid_pair_data.clone(),
