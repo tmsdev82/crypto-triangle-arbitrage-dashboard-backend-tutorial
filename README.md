@@ -1,6 +1,9 @@
-# Rust Warp websocket crypto triangle arbitrage dashboard backend part 1
+# Rust Warp websocket crypto triangle arbitrage dashboard backend
 
-This repository to the article on my blog describing how to create a backend that calculates crypto trading triangle arbitrage profits, and how to send that data to a connected client. This example code shows how to gather data from the Binance websocket API for BTC->ETH->BNB->BTC trades, and how to calculate potential profits. The article can be found on my blog here: [TMS Blog - Crypto triangle arbitrage dashboard: how to, part 1](https://tms-dev-blog.com/crypto-triangle-arbitrage-dashboard-how-to-part-1/)
+This repository is the end result of a series of articles on my blog describing how to create a backend that calculates crypto trading triangle arbitrage profits, and how to send that data to a connected client. This example code shows how to gather data from the Binance websocket API for BTC->ETH->BNB->BTC trades, and how to calculate potential profits. The articles can be found on my blog here: 
+* [TMS Blog - Crypto triangle arbitrage dashboard: how to, part 1](https://tms-dev-blog.com/crypto-triangle-arbitrage-dashboard-how-to-part-1/)
+* [Crypto triangle arbitrage: how to part 2: frontend](https://tms-dev-blog.com/crypto-triangle-arbitrage-how-to-part-2-frontend/) (only frontend work)
+* [TMS Blog - Crypto triangle arbitrage dashboard, part 3: how to add logging](https://tms-dev-blog.com/crypto-triangle-arbitrage-logging-for-backend/)
 
 WebSocket clients will be able to connect to 127.0.0.1:8000/ws, when connected the client will receive JSON data like the following:
 
