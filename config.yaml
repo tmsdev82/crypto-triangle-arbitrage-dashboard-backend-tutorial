@@ -1,0 +1,29 @@
+update_interval: 100
+results_limit: 5
+depth_streams:
+  - ethbtc
+  - bnbeth
+  - bnbbtc
+  - sushibtc
+  - sushibnb
+  - solbtc
+  - solbnb
+  - xrpbtc
+  - xrpeth
+  - xrpbnb
+  - adabnb
+  - adabtc
+  - adaeth
+triangles:
+  - parts: [btc, eth, bnb]
+    pairs: [ethbtc, bnbeth, bnbbtc]
+  - parts: [btc, sol, bnb]
+    pairs: [solbtc, solbnb, bnbbtc]
+  - parts: [btc, xrp, eth]
+    pairs: [xrpbtc, xrpeth, ethbtc]
+  - parts: [btc, sushi, bnb]
+    pairs: [sushibtc, sushibnb, bnbbtc]
+  - parts: [btc, ada, bnb]
+    pairs: [adabtc, adabnb, bnbbtc]
+  - parts: [btc, eth, ada]
+    pairs: [ethbtc, adaeth, adabtc]
