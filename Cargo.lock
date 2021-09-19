@@ -877,13 +877,14 @@ dependencies = [
 
 [[package]]
 name = "rust-triangle-arbitrage-dashboard-tutorial"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "futures",
  "log",
  "log4rs",
  "serde",
  "serde_json",
+ "serde_yaml",
  "tokio",
  "tokio-stream",
  "tungstenite 0.14.0",
