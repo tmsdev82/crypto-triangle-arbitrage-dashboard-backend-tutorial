@@ -47,6 +47,9 @@ async fn main() {
     let f = std::fs::File::open("config.yaml").expect("Could not open file.");
     let app_config: config::AppConfig = serde_yaml::from_reader(f).expect("Could not read values.");
 
+    info!("Number of streams: {}", app_config.depth_streams.len());
+    info!("Number of triangles: {}", app_config.triangles.len());
+
     let clients: Clients = Arc::new(Mutex::new(HashMap::new()));
 
     info!("Configuring websocket route");

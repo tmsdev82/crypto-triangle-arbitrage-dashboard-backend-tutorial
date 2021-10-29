@@ -5,13 +5,14 @@ use crate::{
 };
 use log::{debug, error, info};
 use std::collections::HashMap;
-use tokio::time::Duration;
+use tokio::time::{Duration, Instant};
 
 use tungstenite::{client::AutoStream, WebSocket};
 use warp::ws::Message;
 
 pub async fn main_worker(clients: Clients, config: AppConfig, mut socket: WebSocket<AutoStream>) {
     let mut pairs_data: HashMap<String, DepthStreamWrapper> = HashMap::new();
+    let mut interval_timer = Instant::now();
     loop {
         // tokio::time::sleep(Duration::from_millis(100)).await;
 
@@ -19,7 +20,7 @@ pub async fn main_worker(clients: Clients, config: AppConfig, mut socket: WebSoc
         if connected_client_count == 0 {
             tokio::time::sleep(Duration::from_millis(100)).await;
             debug!("No clients connected, skip sending data");
-            continue;
+            // continue;
         }
 
         let msg = socket.read_message().expect("Error reading message");
@@ -46,21 +47,33 @@ pub async fn main_worker(clients: Clients, config: AppConfig, mut socket: WebSoc
         let pair_key = parsed.stream.split_once("@").unwrap().0;
         pairs_data.insert(pair_key.to_string(), parsed);
 
-        for triangle_config in config.triangles.iter() {
-            process_triangle_data(
-                &pairs_data,
-                &triangle_config.pairs[0],
-                &triangle_config.pairs[1],
-                &triangle_config.pairs[2],
-                [
-                    &triangle_config.parts[0],
-                    &triangle_config.parts[1],
-                    &triangle_config.parts[2],
-                ],
-                clients.clone(),
-            )
-            .await;
+        if interval_timer.elapsed().as_millis() < 105 {
+            // debug!("skip processing");
+            continue;
         }
+
+        let data_copy = pairs_data.clone();
+        let triangles = config.triangles.to_vec();
+        let cclients = clients.clone();
+        tokio::task::spawn(async move {
+            for triangle_config in triangles.iter() {
+                process_triangle_data(
+                    &data_copy,
+                    &triangle_config.pairs[0],
+                    &triangle_config.pairs[1],
+                    &triangle_config.pairs[2],
+                    [
+                        &triangle_config.parts[0],
+                        &triangle_config.parts[1],
+                        &triangle_config.parts[2],
+                    ],
+                    cclients.clone(),
+                )
+                .await;
+            }
+        });
+
+        interval_timer = Instant::now();
     }
 }
 
@@ -139,13 +152,13 @@ async fn process_triangle_data(
         ],
     };
 
-    clients.lock().await.iter().for_each(|(_, client)| {
-        if let Some(sender) = &client.sender {
-            let _ = sender.send(Ok(Message::text(
-                serde_json::to_string(&triangle_data).unwrap(),
-            )));
-        }
-    });
+    // clients.lock().await.iter().for_each(|(_, client)| {
+    //     if let Some(sender) = &client.sender {
+    //         let _ = sender.send(Ok(Message::text(
+    //             serde_json::to_string(&triangle_data).unwrap(),
+    //         )));
+    //     }
+    // });
 }
 
 fn calc_triangle_step(

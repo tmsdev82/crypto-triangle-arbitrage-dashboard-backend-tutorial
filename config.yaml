@@ -14,6 +14,60 @@ depth_streams:
   - adabnb
   - adabtc
   - adaeth
+  - ltceth
+  - ltcbtc
+  - ltcbnb
+  - vetbnb
+  - adausdc
+  - eosusdc
+  - bnbusdc
+  - btcusdc
+  - ethusdc
+  - linkusdc
+  - neousdc
+  - sushiusdc
+  - neoeth
+  - neobtc
+  - neobnb
+  - eoseth
+  - eosbnb
+  - linketh
+  - linkbtc
+  - eosbtc
+  - xrpusdc
+  - ltcusdc
+  - solusdt
+  - adausdt
+  - linkusdt
+  - eosusdt
+  - neousdt
+  - sushiusdt
+  - ethusdt
+  - btcusdt
+  - ltcusdt
+  - vetusdt
+  - xrpusdt
+  - bnbusdt
+
+  - lunabnb
+  - lunausdt
+  - lunabtc
+  - dotbnb
+  - dotusdt
+  - dotbtc
+  - cotibnb
+  - cotiusdt
+  - cotibtc
+  - celrusdt
+  - celrbnb
+  - clerbtc
+  - onebnb
+  - oneusdt
+  - onebtc
+  - maticbnb
+  - maticusdt
+  - maticbtc
+
 triangles:
   - parts: [btc, eth, bnb]
     pairs: [ethbtc, bnbeth, bnbbtc]
@@ -27,3 +81,103 @@ triangles:
     pairs: [adabtc, adabnb, bnbbtc]
   - parts: [btc, eth, ada]
     pairs: [ethbtc, adaeth, adabtc]
+  - parts: [usdc, eth, btc]
+    pairs: [ethusdc, ethbtc, btcusdc]
+  - parts: [usdc, eth, ada]
+    pairs: [ethusdc, adaeth, adausdc]
+  - parts: [usdc, neo, eth]
+    pairs: [neousdc, neoeth, ethusdc]
+  - parts: [usdc, link, btc]
+    pairs: [linkusdc, linkbtc, btcusdc]
+  - parts: [usdc, link, eth]
+    pairs: [linkusdc, linketh, ethusdc]
+  - parts: [usdc, eos, eth]
+    pairs: [eosusdc, eoseth, ethusdc]
+  - parts: [usdc, ada, eth]
+    pairs: [adausdc, adaeth, ethusdc]
+  - parts: [usdc, xrp, eth]
+    pairs: [xrpusdc, xrpeth, ethusdc]
+  - parts: [usdc, xrp, bnb]
+    pairs: [xrpusdc, xrpbnb, bnbusdc]
+  - parts: [usdc, eos, btc]
+    pairs: [eosusdc, eosbtc, btcusdc]
+  - parts: [usdc, ada, btc]
+    pairs: [adausdc, adabtc, btcusdc]
+  - parts: [usdc, ltc, btc]
+    pairs: [ltcusdc, ltcbtc, btcusdc]
+  - parts: [usdt, ltc, btc]
+    pairs: [ltcusdt, ltcbtc, btcusdt]
+  - parts: [usdt, ltc, bnb]
+    pairs: [ltcusdt, ltcbnb, bnbusdt]
+  - parts: [usdt, vet, bnb]
+    pairs: [vetusdt, vetbnb, bnbusdt]
+  - parts: [usdt, neo, eth]
+    pairs: [neousdt, neoeth, ethusdt]
+  - parts: [usdt, link, btc]
+    pairs: [linkusdt, linkbtc, btcusdt]
+  - parts: [usdt, link, eth]
+    pairs: [linkusdt, linketh, ethusdt]
+  - parts: [usdt, eos, eth]
+    pairs: [eosusdt, eoseth, ethusdt]
+  - parts: [usdt, ada, eth]
+    pairs: [adausdt, adaeth, ethusdt]
+  - parts: [usdt, xrp, eth]
+    pairs: [xrpusdt, xrpeth, ethusdt]
+  - parts: [usdt, xrp, bnb]
+    pairs: [xrpusdt, xrpbnb, bnbusdt]
+  - parts: [usdt, eos, btc]
+    pairs: [eosusdt, eosbtc, btcusdt]
+  - parts: [usdt, ada, btc]
+    pairs: [adausdt, adabtc, btcusdt]
+  - parts: [usdt, sol, btc]
+    pairs: [solusdt, solbtc, btcusdt]
+  - parts: [usdt, sol, bnb]
+    pairs: [solusdt, solbnb, bnbusdt]
+  - parts: [usdt, neo, btc]
+    pairs: [neousdt, neobtc, btcusdt]
+  - parts: [usdc, neo, btc]
+    pairs: [neousdc, neobtc, btcusdc]
+  - parts: [usdt, neo, eth]
+    pairs: [neousdt, neoeth, ethusdt]
+  - parts: [usdc, neo, eth]
+    pairs: [neousdc, neoeth, ethusdc]
+  - parts: [usdt, sushi, btc]
+    pairs: [sushiusdt, sushibtc, btcusdt]
+  - parts: [usdt, eos, btc]
+    pairs: [eosusdt, eosbtc, btcusdt]
+  - parts: [usdc, eos, btc]
+    pairs: [eosusdc, eosbtc, btcusdc]
+  - parts: [usdc, eos, bnb]
+    pairs: [eosusdc, eosbnb, bnbusdc]
+  - parts: [usdt, neo, bnb]
+    pairs: [neousdt, neobnb, bnbusdt]
+  
+  - parts: [usdt, luna, bnb]
+    pairs: [lunausdt, lunabnb, bnbusdt]
+  - parts: [usdt, luna, btc]
+    pairs: [lunausdt, lunabtc, btcusdt]
+  
+  - parts: [usdt, dot, bnb]
+    pairs: [dotusdt, dotbnb, bnbusdt]
+  - parts: [usdt, dot, btc]
+    pairs: [dotusdt, dotbtc, btcusdt]
+  
+  - parts: [usdt, coti, bnb]
+    pairs: [cotiusdt, cotibnb, bnbusdt]
+  - parts: [usdt, coti, btc]
+    pairs: [cotiusdt, cotibtc, btcusdt]
+  
+  - parts: [usdt, celr, bnb]
+    pairs: [celrusdt, celrbnb, bnbusdt]
+  - parts: [usdt, celr, btc]
+    pairs: [celrusdt, celrbtc, btcusdt]
+  
+  - parts: [usdt, one, bnb]
+    pairs: [oneusdt, onebnb, bnbusdt]
+  - parts: [usdt, one, btc]
+    pairs: [oneusdt, onebtc, btcusdt]
+  
+  - parts: [usdt, matic, bnb]
+    pairs: [maticusdt, maticbnb, bnbusdt]
+  - parts: [usdt, matic, btc]
+    pairs: [maticusdt, maticbtc, btcusdt]
