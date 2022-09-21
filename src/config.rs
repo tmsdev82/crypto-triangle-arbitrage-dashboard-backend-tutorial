@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct TriangleConfig {
     pub parts: [String; 3],
     pub pairs: [String; 3],

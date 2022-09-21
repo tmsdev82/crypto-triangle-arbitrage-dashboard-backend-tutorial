@@ -4,22 +4,24 @@ use crate::{
     Clients,
 };
 use log::{debug, error, info};
-use std::collections::HashMap;
-use tokio::time::Duration;
+use std::{collections::HashMap, net::TcpStream};
+use tokio::time::{Duration, Instant};
 
-use tungstenite::{client::AutoStream, WebSocket};
+use tungstenite::{protocol::WebSocket, stream::MaybeTlsStream};
 use warp::ws::Message;
 
-pub async fn main_worker(clients: Clients, config: AppConfig, mut socket: WebSocket<AutoStream>) {
+pub async fn main_worker(
+    clients: Clients,
+    config: AppConfig,
+    mut socket: WebSocket<MaybeTlsStream<TcpStream>>,
+) {
     let mut pairs_data: HashMap<String, DepthStreamWrapper> = HashMap::new();
+    let mut interval_timer = Instant::now();
     loop {
-        // tokio::time::sleep(Duration::from_millis(100)).await;
-
         let connected_client_count = clients.lock().await.len();
         if connected_client_count == 0 {
             tokio::time::sleep(Duration::from_millis(100)).await;
             debug!("No clients connected, skip sending data");
-            continue;
         }
 
         let msg = socket.read_message().expect("Error reading message");
@@ -27,7 +29,6 @@ pub async fn main_worker(clients: Clients, config: AppConfig, mut socket: WebSoc
             tungstenite::Message::Text(s) => s,
             tungstenite::Message::Ping(p) => {
                 info!("Ping message received! {:?}", p);
-                // send_pong(&mut socket, p);
                 continue;
             }
             tungstenite::Message::Pong(p) => {
@@ -46,21 +47,31 @@ pub async fn main_worker(clients: Clients, config: AppConfig, mut socket: WebSoc
         let pair_key = parsed.stream.split_once("@").unwrap().0;
         pairs_data.insert(pair_key.to_string(), parsed);
 
-        for triangle_config in config.triangles.iter() {
-            process_triangle_data(
-                &pairs_data,
-                &triangle_config.pairs[0],
-                &triangle_config.pairs[1],
-                &triangle_config.pairs[2],
-                [
-                    &triangle_config.parts[0],
-                    &triangle_config.parts[1],
-                    &triangle_config.parts[2],
-                ],
-                clients.clone(),
-            )
-            .await;
+        if interval_timer.elapsed().as_millis() < 105 {
+            continue;
         }
+        let data_copy = pairs_data.clone();
+        let triangles = config.triangles.to_vec();
+        let cclients = clients.clone();
+        tokio::task::spawn(async move {
+            for triangle_config in triangles.iter() {
+                process_triangle_data(
+                    &data_copy,
+                    &triangle_config.pairs[0],
+                    &triangle_config.pairs[1],
+                    &triangle_config.pairs[2],
+                    [
+                        &triangle_config.parts[0],
+                        &triangle_config.parts[1],
+                        &triangle_config.parts[2],
+                    ],
+                    cclients.clone(),
+                )
+                .await;
+            }
+        });
+
+        interval_timer = Instant::now();
     }
 }
 
@@ -138,14 +149,6 @@ async fn process_triangle_data(
             triangle[2].to_string(),
         ],
     };
-
-    clients.lock().await.iter().for_each(|(_, client)| {
-        if let Some(sender) = &client.sender {
-            let _ = sender.send(Ok(Message::text(
-                serde_json::to_string(&triangle_data).unwrap(),
-            )));
-        }
-    });
 }
 
 fn calc_triangle_step(
@@ -155,7 +158,7 @@ fn calc_triangle_step(
     pair_name: &str,
     triangle_part: &str,
 ) -> f64 {
-    // subtract trading fee
+    // subtract trading fee - should maybe look at pairs with no fees now !??
     let trade_amount = trade_amount - ((trade_amount / 100.0) * 0.075);
     // Compare first part of the part to the part of the triangle
     // to determine on what side of the trade we should be
